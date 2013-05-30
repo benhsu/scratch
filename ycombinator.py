@@ -125,19 +125,31 @@ def _factorial(c):
 			return n * c(n - 1)
 	return factorial
 
+"""
+the type of factorial is int -> int
+type of _factorial is (Something -> (int -> int)) ->(int -> int)
+
+"""
+
 def YC(f):
 	def create_what_outside_has(c):
 		# c is create_anything itself. it is being provided by autocall
 		# we need to pass it to itself so it can wrap it in a lambda for the next layer
-		print "c is %s"%c
-		def anything(x):
+		# the c argument. because its passe don the stack, we can use it for layer2+ calls
+		def the_recursive_call(x):
 			# x is the number being computed on
 			c_of_c = c(c) # c of c is factorial, from inside of _factorial
+			# note this c(c) is legal because c is a functional argument
 			print "c_of_c=%s"%(c_of_c)
 			return c_of_c(x)
-		r = f(anything)
+		r = f(the_recursive_call)
 		return r
 	return ac(create_what_outside_has)
+
+# YC has type ((int -> int) -> (int -> int))
+# ac has type (X -> foo) -> foo
+# the recursive call has type foo -> (int -> int)
+# c_of_c has type
 
 YC(_factorial)(5)
 
